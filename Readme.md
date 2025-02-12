@@ -1038,7 +1038,9 @@
 		```
 		kubectl logs <podName> -n webapps
 		```
-#### We can access the application with Load Balancer DNS Name:
+### We can access the application with Load Balancer DNS Name:
+
+- The ouput will be: 
 
 	![alt text](images/home.jpg)
 	![alt text](images/campgrounds.jpg)
