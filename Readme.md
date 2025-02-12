@@ -689,113 +689,8 @@
 				- Secret: Paste the token which is copied above
 				- Id: k8-token
 				- description: k8-token
-				
-5. Go to Jenkins Console:
-	- Create a Pipeline in Jenkins Server:
-	- Click on New Item;
-		- Name: Prod-env-3tier
-		- select pipeline
-		- click on ok
-				
-	- In General: 
-		- Enable Discard Old Builds
-		- Max of builds to Keep: 2
 		
-### Create a pipeline for the Application (Prod-Campground):
-- The Pipeline name is: Prod-Campground:
-	```
-	pipeline {
-		agent any
-
-		tools {
-			nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
-		}
-
-		environment {
-			SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
-		}
-
-		stages {
-			stage ('Clean Workspace'){
-				steps {
-					cleanWs()
-				}
-			}
-
-			stage ('Code CheckOut'){
-				steps {
-					git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
-				}
-			}
-
-			stage ('Install Dependencies'){
-				steps {
-				sh "npm install"
-				}
-			}
-
-			stage ('Unit Test cases'){
-				steps {
-					sh "npm test"
-				}
-			}
-
-			stage ('Trivy FS Scan'){
-				steps {
-					sh "trivy fs --format table -o fs-remote.html ."
-				}
-			}
-
-			stage ('SonarQube Scan'){
-				steps {
-					script {
-						withSonarQubeEnv('sonar') {
-							sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
-						}
-					}
-				}
-			}
-
-			stage ('Docker Build & Tag'){
-				steps {
-					script {
-						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-							sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
-						}
-					}
-				}
-			}
-
-			stage ('Trivy Image Scan'){
-				steps {
-					sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
-				}
-			}
-
-			stage ('Docker Push'){
-				steps {
-					script {
-						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-							sh " docker push ravisree900/campground:${BUILD_NUMBER} "
-						}
-					}
-				}
-			}
-
-			stage ('Docker Deploy'){
-				steps {
-					script {
-						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-							sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
-						}
-					}
-				}
-			}   
-		}
-	}
-
-	```
-6. Create the Deployment Manifest files in the Git Repository
+5. Create the Deployment Manifest files in the Git Repository
 	
 	- We need to Encode the variables in base64 format
 		- for these values:
@@ -818,110 +713,19 @@
 			echo mongodatabase | base64
 			```
 
-		- Create the manifest files (deployment.yml):
+		- Create the manifest files (deployment.yml), Mentioned in Manifest Folder
 
-			```
-			---
-			apiVersion: v1
-			kind: Secret
-			metadata:
-			  name: camp-secrets
-			type: Opaque
-			data:
-			  CLOUDINARY_CLOUD_NAME: cglpMnjsbkRw
-			  CLOUDINARY_KEY: kasfjsbdofj83nkasdjb
-			  CLOUDINARY_SECRET: knskfjbsdal9nks23njkasjn
-			  MAPBOX_TOKEN: aksjbowe9j908urqequdqw3y98e2ijdmASOksfjbkf
-			  DB_URL: sjfhweoqw294832yijwqdwqjdb893y4ujubdlO83Kbdwjdweorebrroiuerhw93483yafhbqwehfuvkwhriq37y9283iaufi=
-			  SECRET: ksjSDFjidIUkjfsdifk=
-
-			---
-			apiVersion: apps/v1
-			kind: Deployment
-			metadata:
-			  name: yelp-camp-deployment
-			spec:
-			  replicas: 1
-			  selector:
-				matchLabels:
-				  app: yelp-camp
-			  template:
-				metadata:
-				  labels:
-					app: yelp-camp
-				spec:
-				  containers:
-					- name: yelp-camp-container
-					  image: ravisree900/campground:latest
-					  ports:
-						- containerPort: 3000
-					  resources:
-						request:
-						  cpu: 250m
-						  memory: 128Mi
-						limits:
-						  cpu: 500m
-						  memory: 256Mi
-					  env:
-						- name: CLOUDINARY_CLOUD_NAME
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: CLOUDINARY_CLOUD_NAME
-						- name: CLOUDINARY_KEY
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: CLOUDINARY_KEY
-						- name: CLOUDINARY_SECRET
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: CLOUDINARY_SECRET
-						- name: MAPBOX_TOKEN
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: MAPBOX_TOKEN
-						- name: DB_URL
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: DB_URL
-						- name: SECRET
-						  valueFrom:
-							secretKeyRef:
-							  name: camp-secrets
-							  key: SECRET
-					  livenessProbe:
-						httpGet:
-						  path: /
-						  port: 3000
-						initialDelaySeconds: 30   # Adjust the initial delay here
-						periodSeconds: 5
-					  readinessProbe:
-						httpGet:
-						  path: /
-						  port: 3000
-						initialDelaySeconds: 30   # Adjust the initial delay here
-						periodSeconds: 5
-
-			---
-			apiVersion: v1
-			kind: Service
-			metadata:
-			  name: yelp-camp-service
-			spec:
-			  selector:
-				app: yelp-camp
-			  ports:
-				- protocol: TCP
-				  port: 3000
-				  targetPort: 3000
-			  type: LoadBalancer
-			...
-			```
-
+6. Go to Jenkins Console:
+	- Create a Pipeline in Jenkins Server:
+	- Click on New Item;
+		- Name: Prod-env-3tier
+		- select pipeline
+		- click on ok
+				
+	- In General: 
+		- Enable Discard Old Builds
+		- Max of builds to Keep: 2
+		
 #### Final Pipeline in Jenkins to Deploy the application on Production is:
 - The Production pipeline is:
 	```
@@ -1017,6 +821,7 @@
 				steps { 
 					script {
 						withKubeCredentials(kubectlCredentials: [[caCertificate:", clusterName: 'eksCluster', contextName:", credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://KAFUH9HH3JABOBFSAJ83YH38.gr7.ap-south-1.eks.amazonaws.com']]) {
+							dir Manifest
 							sh " kubectl apply -f deployment.yml "
 							sleep 60
 						}
