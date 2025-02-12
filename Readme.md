@@ -1,12 +1,12 @@
 ## 3-tier CICD pipeline using Jenkins for NodeJS application
 
-	Pre-requisites:
-		CLOUDINARY_CLOUD_NAME
-		CLOUDINARY_KEY
-		CLOUDINARY_SECRET
-		MAPBOX_TOKEN
-		DB_URL
-		SECRET=<Provide any Name here>
+	Pre-requisites
+		- CLOUDINARY_CLOUD_NAME
+		- CLOUDINARY_KEY
+		- CLOUDINARY_SECRET
+		- MAPBOX_TOKEN
+		- DB_URL
+		- SECRET=<Provide any Name here>
 		
 1. Create an Instance Name as Local, with Screenshot Open Ports
 	- Install NodeJS:
@@ -25,14 +25,15 @@
 2. To setup Cloudinary and Mapbox
 	
 	1. Create Cloudinary:
-		Go to google 
-		Search for Cloudinary.com 
-		Signup for Free 
-		Sign up with google 
-		Copy the first command and paste it in Notepad 
-		Modify that based on our requirements.
+		- Go to google 
+		- Search for Cloudinary.com 
+		- Signup for Free 
+		- Sign up with google 
+		- Copy the first command and paste it in Notepad 
+		- Modify that based on our requirements.
 		
 	This is the code you need to copy: (Example)
+
 	```
 	  import { v2 as cloudinary } from 'cloudinary';
 
@@ -47,62 +48,64 @@
 	```
 	
 	2. From above code we need to modify as below:
-	```
+
+		```
 		CLOUDINARY_CLOUD_NAME=dvgmw8sgt
 		CLOUDINARY_KEY=929683399487693
 		CLOUDINARY_SECRET=LO8BFC1xrph1bsrN8Zzsrw3TRZw
-	```
+		```
 	
 	
 	3. Create Mapbox:
-		Go to google
-		Search for mapbox.com 
-		Click on get started for Free 
-		signup with google 
-		Give debit card details but it will not change you anything
+		- Go to google
+		- Search for mapbox.com 
+		- Click on get started for Free 
+		- signup with google 
+		- Give debit card details but it will not change you anything
 		
-		Once Account is created, click on Access tokens and Generate the token here
-		 Name: Local-Token
-		 Scope: Select All
-		 Click on Create Token and Copy the Token
+		- Once Account is created, click on Access tokens and Generate the token here
+		 	- Name: Local-Token
+		 	- Scope: Select All
+		 	- Click on Create Token and Copy the Token
 		 
-	MAPBOX_TOKEN=<Paste the token here>
+		- MAPBOX_TOKEN=<Paste the token here>
 	
 3. To Setup MongoDB:
 	1. Create an MongoDB account
-		Go to Google
-		search for Mongodb atlas
-		Click on Official link
-		Create an account using Google signup
+		- Go to Google
+		- search for Mongodb atlas
+		- Click on Official link
+		- Create an account using Google signup
 	
 	
 	2. Once Create Deploy your database
-		Select free M0 type
-		Name: mongo-local
-		Provider: AWS
-		Region: Mumbai
-		Create Deployment
-		Once DB Created, it provide Username and Password, Save it safe in some where
-		click on Create database user
-		click on choose a connection method
-		Click on Drives
-		Copy the URL in the Connection string into application code (3rd point)
+		- Select free M0 type
+		- Name: mongo-local
+		- Provider: AWS
+		- Region: Mumbai
+		- Create Deployment
+
+		- Once DB Created, it provide Username and Password, Save it safe in some where
+			- click on Create database user
+			- click on choose a connection method
+			- Click on Drives
+		- Copy the URL in the Connection string into application code (3rd point)
 		
-	DB_URL="<Paste the URL Here>"		# Make sure that URL is in double quotes
+		- DB_URL="<Paste the URL Here>"		# Make sure that URL is in double quotes
 	
 	3. Go to Network Access on the Leftside
-		Click on Add IP Address
-		Access List Entry: 0.0.0.0/0	# you need to use only from your IP address, you need to specify your local Ip address here
-		Click on confirm.
+		- Click on Add IP Address
+		- Access List Entry: 0.0.0.0/0	# you need to use only from your IP address, you need to specify your local Ip address here
+		- Click on confirm.
 		
 
 4. Clone the code from Github to Local:
-	GitHub URL: https://github.com/jaiswaladi246/3-Tier-Full-Stack.git
+	- GitHub URL: https://github.com/Venkat3699/3-tier-Full-Stack.git
 		
 5. Once Clone the code:
 	1. go inside the folder:
-		cd 3-Tier-Full-Stack
-		npm install
+		- cd 3-Tier-Full-Stack
+		- npm install
 	
 	2. Create .env file and paste the pre-requisites here
 	```
