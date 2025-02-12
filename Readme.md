@@ -301,18 +301,18 @@
 			- click on create
 		
 7. Create a Pipeline in Jenkins Server:
-	Click on New Item;
-		Name: Dev-env-3tier
-		select pipeline
-		click on ok
+	- Click on New Item:
+		- Name: Dev-env-3tier
+		- select pipeline
+		- click on ok
 		
-	In General: 
-		Enable Discard Old Builds
-		Max of builds to Keep: 2
+	- In General: 
+		- Enable Discard Old Builds
+		- Max of builds to Keep: 2
 		
 8. Create a pipeline for the Application:
-	The Pipeline Name is Dev-Campground:
-	```
+	- The Pipeline Name is Dev-Campground:
+		```
 		pipeline {
 			agent any
 
@@ -402,11 +402,12 @@
 				}
 			}
 		}
-	```	
-	Click on Apply and Save
-	Click on Build Now
+		```	
+	- Click on Apply and Save
+	- Click on Build Now
 	
-	Here We can Access the application with PUBLICIP:3000
+	- Here We can Access the application with PUBLICIP:3000
+	
 		![alt text](images/home.jpg)
 		![alt text](images/campgrounds.jpg)
 		![alt text](images/register.jpg)
