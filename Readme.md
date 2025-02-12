@@ -540,49 +540,50 @@
 			kubectl get nodes
 			```
 			
-10. Check the EKS Cluster is Successfully Configured or Not
+2. Check the EKS Cluster is Successfully Configured or Not
 
-	AWS Console:
-		Go to EKS Page: 
-			Click on Cluster Name:
-				Check API Server Endpoint
+	- AWS Console:
+		- Go to EKS Page: 
+		- Click on Cluster Name:
+			- Check API Server Endpoint
 				
-			Click on Networking
-				click on Cluster Security Group
-					- It will Open the Security Group Page:
-						- In this see the Sg Description as " Communication between Control plane and Worker nodegroups, Select this SG"
-					Click on Edit Inbound Rules
-						Provide All Traffic 
-						Save the SG
+		- Click on Networking
+			- click on Cluster Security Group
+				- It will Open the Security Group Page:
+				- In this see the Sg Description as " Communication between Control plane and Worker nodegroups, Select this SG"
+				- Click on Edit Inbound Rules
+					- Provide All Traffic 
+					- Save the SG
 						
-11. We Need to Create the RBAC for Secure access on EKS
-
-	The Commands and manifest files are:
-		
-		To Create a NameSpace
-		```
+3. We Need to Create the RBAC for Secure access on EKS
+	- The Commands and manifest files are:
+		- To Create a NameSpace
+			```
 			kubectl create namespace webapps
-		```
-		```	
-		vim service_account.yml
-		```
-		```
+			```
+		- Create an Service Account:
+			```	
+			vim service_account.yml
+			```
+
+			```
 		
 			apiVersion: v1
 			kind: ServiceAccount
 			metadata:
 			  name: jenkins
 			  namespace: webapps
-		```
+			```
 
-		To Execute the service_account file:
-		```	
+		- To Execute the service_account file:
+			```	
 			kubectl apply -f service_account.yml
-		```
-		```
-		vim role.yml
-		```
-		```
+			```
+		- Create a RBAC Manifest file:
+			```
+			vim role.yml
+			```
+			```
 			apiVersion: rbac.authorization.k8s.io/v1
 			kind: Role
 			metadata:
@@ -621,16 +622,18 @@
 				  - serviceaccounts
 				  - services
 				verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-		```
+			```
 
-		To Execute the service_account file:
-		```	
+		- To Execute the service_account file:
+			```	
 			kubectl apply -f role.yml
-		```	
-		```	
-		vim role_binding.yml
-		```
-		```
+			```	
+		- Create an Role Binding file:
+			```	
+			vim role_binding.yml
+			```
+
+			```
 			apiVersion: rbac.authorization.k8s.io/v1
 			kind: RoleBinding
 			metadata:
@@ -644,59 +647,63 @@
 			- namespace: webapps 
 			  kind: ServiceAccount
 			  name: jenkins 
-		```
+			```
 
-		To Execute the service_account file:
-		```	
+		- To Execute the service_account file:
+			```	
 			kubectl apply -f role_binding.yml
-		```
-		```
-		vim secret.yml
-		```
-		```
-			apiVersion: v1
-			kind: Secret
-			type: kubernetes.io/service-account-token
-			metadata:
-			  name: mysecretname
-			  annotations:
-				kubernetes.io/service-account.name: jenkins
-		```
+			```
+		- Create the Secret File for Token Generation:
+			```
+			vim secret.yml
+			```
 
-		To Execute the service_account file:
-		```	
+			```
+				apiVersion: v1
+				kind: Secret
+				type: kubernetes.io/service-account-token
+				metadata:
+				name: mysecretname
+				annotations:
+					kubernetes.io/service-account.name: jenkins
+			```
+
+		- To Execute the service_account file:
+			```	
 			kubectl apply -f secret.yml -n webapps
-		```
+			```
 
-		To Get the Secret for the above manifest file:
-		```
+		- To Get the Secret for the above manifest file:
+			```
 			kubectl describe secret mysecretname -n webapps
-		```	
-			- Here it will show the token, copy the token and paste it in some where
+			```	
+		- Here it will show the token, copy the token and paste it in some where
 			
-12. Create Kubernetes Credentials in Jenkins:
-	Manage Jenkins:
-		Credentials:
-			Click on Add Credentials
-			Click on global
-			Select Secret Text
-				Secret: Paste the token which is copied above
-				Id: k8-token
-				description: k8-token
+4. Create Kubernetes Credentials in Jenkins:
+	- Manage Jenkins:
+		- Credentials:
+			- Click on Add Credentials
+			- Click on global
+			- Select Secret Text
+				- Secret: Paste the token which is copied above
+				- Id: k8-token
+				- description: k8-token
 				
-13. Go to Jenkins Console:
-		Create a Pipeline in Jenkins Server:
-			Click on New Item;
-				Name: Prod-env-3tier
-				select pipeline
-				click on ok
+5. Go to Jenkins Console:
+	- Create a Pipeline in Jenkins Server:
+	- Click on New Item;
+		- Name: Prod-env-3tier
+		- select pipeline
+		- click on ok
 				
-			In General: 
-				Enable Discard Old Builds
-				Max of builds to Keep: 2
+	- In General: 
+		- Enable Discard Old Builds
+		- Max of builds to Keep: 2
 		
 ### Create a pipeline for the Application (Prod-Campground):
-	```
+	- The Pipeline name is: Prod-Campground:
+
+		```
 		pipeline {
 			agent any
 
@@ -777,32 +784,33 @@
 			}
 		}
 		
-	```	
-15. Create the Deployment Manifest files in the Git Repository
+		```	
+6. Create the Deployment Manifest files in the Git Repository
 	
-	1. We need to Encode the variables in base64 format
-		for these values:
-		```
+	- We need to Encode the variables in base64 format
+		- for these values:
+			```
 			CLOUDINARY_CLOUD_NAME=dvgmw8sgt
 			CLOUDINARY_KEY=929683399487693
 			CLOUDINARY_SECRET=LO8BFC1xrph1bsrN8Zzsrw3TRZw
 			MAPBOX_TOKEN=dk.kasdhfasoiskbhfbsdJDkjdJSJcclJAdf.akdbasofbascb
 			DB_URL="mongodb+srv://ravisree900:dbasflsbfsascmcsf.fbsdjffv.bfjsbhajolda.mongodb.net/?retrywrite=true&w=majority&appnamecluster234"
 			SECRET=mongodatabase
-		```
+			```
 			
-		For Encoding to base64 the commands are:
-		```
+		- For Encoding to base64 the commands are:
+			```
 			echo dvgmw8sgt | base64
 			echo 929683399487693 | base64
 			echo LO8BFC1xrph1bsrN8Zzsrw3TRZw | base64
 			echo dk.kasdhfasoiskbhfbsdJDkjdJSJcclJAdf.akdbasofbascb | base64
 			echo 'mongodb+srv://ravisree900:dbasflsbfsascmcsf.fbsdjffv.bfjsbhajolda.mongodb.net/?retrywrite=true&w=majority&appnamecluster234' | base64
 			echo mongodatabase | base64
-		```
+			```
 
-		Create the manifest files (deployment.yml):
-		```
+		- Create the manifest files (deployment.yml):
+
+			```
 			---
 			apiVersion: v1
 			kind: Secret
@@ -902,10 +910,10 @@
 				  targetPort: 3000
 			  type: LoadBalancer
 			...
-		```
+			```
 
 #### Final Pipeline in Jenkins to Deploy the application on Production is:
-	```
+		```
 		pipeline {
 			agent any
 
@@ -1017,25 +1025,26 @@
 				}
 			}
 		}
-	```	
+
+		```	
 17. Check the pods and Logs run some commands:
 
-	To Check livenessProbe and readinessProbe:
-	```
+	- To Check livenessProbe and readinessProbe:
+		```
 		kubectl describe pod <podName> -n webapps
-	```
+		```
 
-	To See the logs of Pod
-	```
+	- To See the logs of Pod
+		```
 		kubectl logs <podName> -n webapps
-	```
+		```
 #### We can access the application with Load Balancer DNS Name:
 
 	![alt text](images/home.jpg)
 	![alt text](images/campgrounds.jpg)
 	![alt text](images/register.jpg)
 
-	To Delete the EKS Cluster:
+- To Delete the EKS Cluster:
 	```
-		eksctl delete cluster --name eksCluster --region ap-south-1
+	eksctl delete cluster --name eksCluster --region ap-south-1
 	```
