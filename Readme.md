@@ -109,20 +109,21 @@
 	
 	2. Create .env file and paste the pre-requisites here
 	```
-		vim .env
+	vim .env
 	```
 	```
-			CLOUDINARY_CLOUD_NAME=dvgmw8sgt
-			CLOUDINARY_KEY=929683399487693
-			CLOUDINARY_SECRET=LO8BFC1xrph1bsrN8Zzsrw3TRZw
-			MAPBOX_TOKEN=<Paste the token here>
-			DB_URL="<Paste the URL Here>"
-			SECRET=<Provide any Name here>
+		CLOUDINARY_CLOUD_NAME=dvgmw8sgt
+		CLOUDINARY_KEY=929683399487693
+		CLOUDINARY_SECRET=LO8BFC1xrph1bsrN8Zzsrw3TRZw
+		MAPBOX_TOKEN=<Paste the token here>
+		DB_URL="<Paste the URL Here>"
+		SECRET=<Provide any Name here>
 	```		
 	3. now Run the application:
+	```
 		npm start
-		
-		"once it shows database is connected, we can access our application with PublicIP:3000 from the browser"
+	```
+	- "once it shows database is connected, we can access our application with PublicIP:3000 from the browser"
 	![alt text](images/home.jpg)
 	![alt text](images/campgrounds.jpg)
 	![alt text](images/register.jpg)
@@ -131,120 +132,123 @@
 
 1. Create 2 instances as shown below in AWS Cloud:
 
-	Create an Instance:
-		Name: Jenkins
-		OS image: Ubuntu 20.04LTS
-		InstanceType: t2.large
-		keyPair: select/create keyPair
-		Network:
-			Select the existing SG and Select our open ports SG
-		![alt text](images/SG-Open_Ports.png)
-		Volume: 25
-		Click on Create
+	- Create an Instance:
+		- Name: Jenkins
+		- OS image: Ubuntu 20.04LTS
+		- InstanceType: t2.large
+		- keyPair: select/create keyPair
+		- Network:
+			- Select the existing SG and Select our open ports SG
 
-	Create an Instance:
-		Name: SonarQube
-		OS image: Ubuntu 20.04LTS
-		InstanceType: t2.medium
-		keyPair: select/create keyPair
-		Network:
-			Select the existing SG and Select our open ports SG
-		![alt text](images/SG-Open_Ports.png)
-		Volume: 15
-		Click on Create
+			![alt text](images/SG-Open_Ports.png)
+
+		- Volume: 25
+		- Click on Create
+
+	- Create an Instance:
+		- Name: SonarQube
+		- OS image: Ubuntu 20.04LTS
+		- InstanceType: t2.medium
+		- keyPair: select/create keyPair
+		- Network:
+			- Select the existing SG and Select our open ports SG
+
+				![alt text](images/SG-Open_Ports.png)
+
+		- Volume: 15
+		- Click on Create
 
 2. Install Jenkins on Jenkins Server:
-	Connect to Jenkins Server using Putty/GitBash/Mobaxterm
+	- Connect to Jenkins Server using Putty/GitBash/Mobaxterm
 		- Install Java & Jenkins (jenkins.sh):
-		```
+
+			```
 			sudo apt update
 			sudo apt install fontconfig openjdk-17-jre
 			java -version
 			sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
-			  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-				
+			  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key	
 			echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
 			  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-			  /etc/apt/sources.list.d/jenkins.list > /dev/null
-			  
+			  /etc/apt/sources.list.d/jenkins.list > /dev/null 
 			sudo apt-get update
-			
 			sudo apt-get install jenkins -y
-			
 			sudo systemctl enable jenkins
-			
 			sudo systemctl start jenkins
-			
 			sudo systemctl status jenkins
-		```
+			```
 
 		- Install Docker:
-		```
+
+			```
 			sudo apt install docker.io
 			sudo chmod 666 /var/run/docker.sock
-		```	
+			```	
+
 		- Install Trivy (trivy.sh):
-		```
+
+			```
 			sudo apt-get install wget apt-transport-https gnupg lsb-release
 			wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 			echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 			sudo apt-get update
-			sudo apt-get install trivy
-		```
+			sudo apt-get install trivy -y
+
+			```
 	
 	Create the Admin User here
 			
 3. Install SonarQube on SonarQube Server:
-	Connect to SonarQube Server using Putty/GitBash/Mobaxterm:
+	- Connect to SonarQube Server using Putty/GitBash/Mobaxterm:
 		- Install Docker:
-		```
+			```
 			sudo apt update
 			sudo apt install docker.io
 			sudo chmod 666 /var/run/docker.sock
-		```
+			```
 
 		- Install SonarQube Container:
-		```
+			```
 			docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 			docker ps
-		```
+			```
 			
-	Access the SonarQube application from the Browser with PublicIP:9000
-	For Login:
-	```
-		username: admin
-		password: admin
-	```
+	- Access the SonarQube application from the Browser with PublicIP:9000
+		- For Login:
+			```
+			username: admin
+			password: admin
+			```
 
-	Create a SonarQube Token for the Jenkins Configuration:
-		Click on Administration
-		Click on Security
-		Click on Users
-		Generate Token Here
-		Copy this token and paste it in some where 
+	- Create a SonarQube Token for the Jenkins Configuration:
+		- Click on Administration
+		- Click on Security
+		- Click on Users
+		- Generate Token Here
+		- Copy this token and paste it in some where 
 		
 4. Go to DockerHub:
-	Create a Token for the Jenkins Credentials:
-		Click on Profile Icon
-		Click on Account Settings
-		In Security:
-			Click on Personal Access Token
-			Generate a Token Here
-			Copy this token and paste it in some where 
+	- Create a Token for the Jenkins Credentials:
+		- Click on Profile Icon
+		- Click on Account Settings
+		- In Security:
+			- Click on Personal Access Token
+			- Generate a Token Here
+			- Copy this token and paste it in some where 
 		
 5. In Jenkins Console, we need to Install certain Plugins:
-	Jenkins Console:
-		Click on Manage Jenkins
-		Click on Plugins
-		Click on Available Plugins
-		Search and Select below Plugins:
+	- Jenkins Console:
+		* Click on Manage Jenkins
+		* Click on Plugins
+		* Click on Available Plugins
+		* Search and Select below Plugins:
 			NodeJS
 			SonarQubeScanner
 			Docker
 			DockerPipeline
 			Kubernetes
 			KubernetesCLI
-		Click on Install
+		* Click on Install
 		
 6. Configure Plugins on Jenkins Server:
 	Manage Jenkins:
