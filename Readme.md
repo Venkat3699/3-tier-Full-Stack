@@ -413,7 +413,7 @@
 		![alt text](images/register.jpg)
 
 
-#  Setup the Production Environment to Deploy Our Appication 
+#  Setup the Production Environment to Deploy Our Application 
 
 1. Setup EKS Cluster on Jenkins Server:
 	- Pre-requisites:
