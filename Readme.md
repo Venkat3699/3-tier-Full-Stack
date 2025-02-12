@@ -242,56 +242,63 @@
 		* Click on Plugins
 		* Click on Available Plugins
 		* Search and Select below Plugins:
-			NodeJS
-			SonarQubeScanner
-			Docker
-			DockerPipeline
-			Kubernetes
-			KubernetesCLI
+			- NodeJS
+			- SonarQubeScanner
+			- Docker
+			- DockerPipeline
+			- Kubernetes
+			- KubernetesCLI
 		* Click on Install
 		
 6. Configure Plugins on Jenkins Server:
-	Manage Jenkins:
-		Tools:
-			SonarQube Scanner Installation:
-				Name: sonar-scanner
-				Install Automatically with Latest Version  (or with your required version)
+	- Manage Jenkins:
+		- Tools:
+			- SonarQube Scanner Installation:
+				- Name: sonar-scanner
+				- Install Automatically with Latest Version  (or with your required version)
 				
-			NodeJs Installation:
-				Name: nodejs
-				Install Automatically with Latest Version (or with your required version)
+			- NodeJs Installation:
+				- Name: nodejs
+				- Install Automatically with Latest Version (or with your required version)
 				
-			Docker Installation:
-				Name: docker
-				Install Automatically with Latest Version (or with your required version)
-			Click on Apply and Save
+			- Docker Installation:
+				- Name: docker
+				- Install Automatically with Latest Version (or with your required version)
 			
-		System:
-			SonarQube server:
-				sonarqube installation:
-					Add sonarqube
+			- Click on Apply and Save
+			
+		- System:
+			- SonarQube server:
+				- sonarqube installation:
+					- Add sonarqube
+						```
 						Name: sonar
 						ServerURL: http://<PublicIP of sonarqube>:9000
 						SonarAuthenticationToken: Select the Credentials here
-						Click on Apply and Save
+						```
+					- Click on Apply and Save
 			
-		Credentials:
-			click on global
-			click on Add Credentials (For SonarQube)
-			select secret text:
+		- Credentials:
+			- click on global
+			- click on Add Credentials (For SonarQube)
+			- select secret text:
+				```
 				secret: <paste the token you copied from sonarqube>
 				id: sonar-token
 				description: sonar-token
-			click on create
+				```
+			- click on create
 			
-			Click on global
-			click on Add Credentials (For Docker)
-			Select Username & Password
+			- Click on global
+			- click on Add Credentials (For Docker)
+			- Select Username & Password
+				```
 				username: Provide your dockerhub username
 				password: Provide DockerHub Token here
 				id: docker-cred
 				description: docker-cred
-			click on create
+				```
+			- click on create
 		
 7. Create a Pipeline in Jenkins Server:
 	Click on New Item;
