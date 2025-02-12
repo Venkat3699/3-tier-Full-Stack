@@ -406,8 +406,8 @@
 	- Click on Apply and Save
 	- Click on Build Now
 	
-### Here We can Access the application with PUBLICIP:3000
-
+	- Here We can Access the application with PUBLICIP:3000
+	
 		![alt text](images/home.jpg)
 		![alt text](images/campgrounds.jpg)
 		![alt text](images/register.jpg)
