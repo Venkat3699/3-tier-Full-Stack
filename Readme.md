@@ -312,97 +312,98 @@
 		
 8. Create a pipeline for the Application:
 	- The Pipeline Name is Dev-Campground:
-		```
-		pipeline {
-			agent any
+	```
+	pipeline {
+		agent any
 
-			tools {
-				nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
-			}
-
-			environment {
-				SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
-			}
-
-			stages {
-				stage ('Clean Workspace'){
-					steps {
-						cleanWs()
-					}
-				}
-
-				stage ('Code CheckOut'){
-					steps {
-						git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
-					}
-				}
-
-				stage ('Install Dependencies'){
-					steps {
-					   sh "npm install"
-					}
-				}
-
-				stage ('Unit Test cases'){
-					steps {
-						sh "npm test"
-					}
-				}
-
-				stage ('Trivy FS Scan'){
-					steps {
-						sh "trivy fs --format table -o fs-remote.html ."
-					}
-				}
-
-				stage ('SonarQube Scan'){
-					steps {
-						script {	
-							withSonarQubeEnv('sonar') {		// we have configure credentials in the Jenkins system, for that Name is sonar
-								sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
-							}
-						}
-					}
-				}
-
-				stage ('Docker Build & Tag'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
-							}
-						}
-					}
-				}
-
-				stage ('Trivy Image Scan'){
-					steps {
-						sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
-					}
-				}
-
-				stage ('Docker Push'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh " docker push ravisree900/campground:${BUILD_NUMBER} "
-							}
-						}
-					}
-				}
-
-				stage ('Docker Deploy to Dev'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
-							}
-						}
-					}
-				}
-			}
+		tools {
+			nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
 		}
-		```	
+
+		environment {
+			SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
+		}
+
+		stages {
+			stage ('Clean Workspace'){
+				steps {
+					cleanWs()
+				}
+			}
+
+			stage ('Code CheckOut'){
+				steps {
+					git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
+				}
+			}
+
+			stage ('Install Dependencies'){
+				steps {
+				sh "npm install"
+				}
+			}
+
+			stage ('Unit Test cases'){
+				steps {
+					sh "npm test"
+				}
+			}
+
+			stage ('Trivy FS Scan'){
+				steps {
+					sh "trivy fs --format table -o fs-remote.html ."
+				}
+			}
+
+			stage ('SonarQube Scan'){
+				steps {
+					script {
+						withSonarQubeEnv('sonar') {
+							sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Build & Tag'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
+						}
+					}
+				}
+			}
+
+			stage ('Trivy Image Scan'){
+				steps {
+					sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
+				}
+			}
+
+			stage ('Docker Push'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker push ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Deploy'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}   
+		}
+	}
+
+	```
 	- Click on Apply and Save
 	- Click on Build Now
 	
@@ -701,90 +702,99 @@
 		- Max of builds to Keep: 2
 		
 ### Create a pipeline for the Application (Prod-Campground):
-	- The Pipeline name is: Prod-Campground:
+- The Pipeline name is: Prod-Campground:
+	```
+	pipeline {
+		agent any
 
-		```
-		pipeline {
-			agent any
-
-			tools {
-				nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
-			}
-
-			environment {
-				SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
-			}
-
-			stages {
-				stage ('Clean Workspace'){
-					steps {
-						cleanWs()
-					}
-				}
-
-				stage ('Code CheckOut'){
-					steps {
-						git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
-					}
-				}
-
-				stage ('Install Dependencies'){
-					steps {
-					   sh "npm install"
-					}
-				}
-
-				stage ('Unit Test cases'){
-					steps {
-						sh "npm test"
-					}
-				}
-
-				stage ('Trivy FS Scan'){
-					steps {
-						sh "trivy fs --format table -o fs-remote.html ."
-					}
-				}
-
-				stage ('SonarQube Scan'){
-					steps {
-						script {
-							withSonarQubeEnv('sonar') {
-								sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
-							}
-						}
-					}
-				}
-
-				stage ('Docker Build & Tag'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh "docker build -t ravisree900/campground:latest ."
-							}
-						}
-					}
-				}
-
-				stage ('Trivy Image Scan'){
-					steps {
-						sh " trivy image --format table -o fs-remote.html ravisree900/campground:latest "
-					}
-				}
-
-				stage ('Docker Push'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh " docker push ravisree900/campground:latest "
-							}
-						}
-					}
-				}
-			}
+		tools {
+			nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
 		}
-		
-		```	
+
+		environment {
+			SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
+		}
+
+		stages {
+			stage ('Clean Workspace'){
+				steps {
+					cleanWs()
+				}
+			}
+
+			stage ('Code CheckOut'){
+				steps {
+					git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
+				}
+			}
+
+			stage ('Install Dependencies'){
+				steps {
+				sh "npm install"
+				}
+			}
+
+			stage ('Unit Test cases'){
+				steps {
+					sh "npm test"
+				}
+			}
+
+			stage ('Trivy FS Scan'){
+				steps {
+					sh "trivy fs --format table -o fs-remote.html ."
+				}
+			}
+
+			stage ('SonarQube Scan'){
+				steps {
+					script {
+						withSonarQubeEnv('sonar') {
+							sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Build & Tag'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
+						}
+					}
+				}
+			}
+
+			stage ('Trivy Image Scan'){
+				steps {
+					sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
+				}
+			}
+
+			stage ('Docker Push'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker push ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Deploy'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}   
+		}
+	}
+
+	```
 6. Create the Deployment Manifest files in the Git Repository
 	
 	- We need to Encode the variables in base64 format
@@ -913,120 +923,120 @@
 			```
 
 #### Final Pipeline in Jenkins to Deploy the application on Production is:
-		```
-		pipeline {
-			agent any
+- The Production pipeline is:
+	```
+	pipeline {
+		agent any
 
-			tools {
-				nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
-			}
-
-			environment {
-				SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
-			}
-
-			stages {
-				stage ('Clean Workspace'){
-					steps {
-						cleanWs()
-					}
-				}
-
-				stage ('Code CheckOut'){
-					steps {
-						git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
-					}
-				}
-
-				stage ('Install Dependencies'){
-					steps {
-					   sh "npm install"
-					}
-				}
-
-				stage ('Unit Test cases'){
-					steps {
-						sh "npm test"
-					}
-				}
-
-				stage ('Trivy FS Scan'){
-					steps {
-						sh "trivy fs --format table -o fs-remote.html ."
-					}
-				}
-
-				stage ('SonarQube Scan'){
-					steps {
-						script {
-							withSonarQubeEnv('sonar') {
-								sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
-							}
-						}
-					}
-				}
-
-				stage ('Docker Build & Tag'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
-							}
-						}
-					}
-				}
-
-				stage ('Trivy Image Scan'){
-					steps {
-						sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
-					}
-				}
-
-				stage ('Docker Push'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh " docker push ravisree900/campground:${BUILD_NUMBER} "
-							}
-						}
-					}
-				}
-
-				stage ('Docker Deploy'){
-					steps {
-						script {
-							withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-								sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
-							}
-						}
-					}
-				}
-
-				stage ('Deploy to EKS Cluster'){        // Generate using Pipeline Syntax
-					steps { 
-						script {
-							withKubeCredentials(kubectlCredentials: [[caCertificate:", clusterName: 'eksCluster', contextName:", credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://KAFUH9HH3JABOBFSAJ83YH38.gr7.ap-south-1.eks.amazonaws.com']]) {
-								sh " kubectl apply -f deployment.yml "
-								sleep 60
-							}
-						}
-					}
-				}
-
-				stage ('Verify the Deployment'){        // Generate using Pipeline Syntax
-					steps { 
-						script {
-							withKubeCredentials(kubectlCredentials: [[caCertificate:", clusterName: 'eksCluster', contextName:", credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://KAFUH9HH3JABOBFSAJ83YH38.gr7.ap-south-1.eks.amazonaws.com']]) {
-								sh "kubectl get pods -n webapps"
-								sh "kubectl get svc -n webapps"
-							}
-						}
-					}
-				}
-			}
+		tools {
+			nodejs 'nodejs'         // we have mentioned in tools section in manage jenkins that we are using nodejs section name
 		}
 
-		```	
+		environment {
+			SCANNER_HOME= tool 'sonar-scanner'      // we have mentioned in tools section in manage jenkins that we are using sonarqube scanner section name
+		}
+
+		stages {
+			stage ('Clean Workspace'){
+				steps {
+					cleanWs()
+				}
+			}
+
+			stage ('Code CheckOut'){
+				steps {
+					git credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-Full-Stack.git'
+				}
+			}
+
+			stage ('Install Dependencies'){
+				steps {
+				sh "npm install"
+				}
+			}
+
+			stage ('Unit Test cases'){
+				steps {
+					sh "npm test"
+				}
+			}
+
+			stage ('Trivy FS Scan'){
+				steps {
+					sh "trivy fs --format table -o fs-remote.html ."
+				}
+			}
+
+			stage ('SonarQube Scan'){
+				steps {
+					script {
+						withSonarQubeEnv('sonar') {
+							sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=Campground -Dsonar.projectName=Campground "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Build & Tag'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh "docker build -t ravisree900/campground:${BUILD_NUMBER} ."
+						}
+					}
+				}
+			}
+
+			stage ('Trivy Image Scan'){
+				steps {
+					sh " trivy image --format table -o fs-remote.html ravisree900/campground:${BUILD_NUMBER} "
+				}
+			}
+
+			stage ('Docker Push'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker push ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}
+
+			stage ('Docker Deploy'){
+				steps {
+					script {
+						withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+							sh " docker run -d --name camp -p 3000:3000 ravisree900/campground:${BUILD_NUMBER} "
+						}
+					}
+				}
+			}
+
+			stage ('Deploy to EKS Cluster'){        // Generate using Pipeline Syntax
+				steps { 
+					script {
+						withKubeCredentials(kubectlCredentials: [[caCertificate:", clusterName: 'eksCluster', contextName:", credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://KAFUH9HH3JABOBFSAJ83YH38.gr7.ap-south-1.eks.amazonaws.com']]) {
+							sh " kubectl apply -f deployment.yml "
+							sleep 60
+						}
+					}
+				}
+			}
+
+			stage ('Verify the Deployment'){        // Generate using Pipeline Syntax
+				steps { 
+					script {
+						withKubeCredentials(kubectlCredentials: [[caCertificate:", clusterName: 'eksCluster', contextName:", credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://KAFUH9HH3JABOBFSAJ83YH38.gr7.ap-south-1.eks.amazonaws.com']]) {
+							sh "kubectl get pods -n webapps"
+							sh "kubectl get svc -n webapps"
+						}
+					}
+				}
+			} 
+		}
+	}
+	```
 17. Check the pods and Logs run some commands:
 
 	- To Check livenessProbe and readinessProbe:
